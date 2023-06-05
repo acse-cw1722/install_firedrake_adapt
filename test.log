@@ -1,0 +1,385 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.3, pytest-7.3.1, pluggy-1.0.0 -- /Users/cw1722/Projects/firedrake/firedrake-adapt/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/cw1722/Projects/firedrake/firedrake-adapt/src/firedrake
+configfile: setup.cfg
+plugins: nbval-0.10.0, mpi-0.1, xdist-3.3.1, anyio-3.7.0
+collecting ... collected 15 items
+
+test_meshadapt.py::test_no_adapt[2] PASSED                               [  6%]
+test_meshadapt.py::test_no_adapt[3] PASSED                               [ 13%]
+test_meshadapt.py::test_no_adapt_parallel FAILED                         [ 20%]
+test_meshadapt.py::test_preserve_cell_tags_2d[annulus] PASSED            [ 26%]
+test_meshadapt.py::test_preserve_cell_tags_2d[cell-sets] PASSED          [ 33%]
+test_meshadapt.py::test_preserve_cell_tags_2d[square_with_embedded_line] PASSED [ 40%]
+test_meshadapt.py::test_preserve_facet_tags_2d[annulus] PASSED           [ 46%]
+test_meshadapt.py::test_preserve_facet_tags_2d[circle_in_square] PASSED  [ 53%]
+test_meshadapt.py::test_adapt_3d PASSED                                  [ 60%]
+test_meshadapt.py::test_adapt_parallel_3d_np2 FAILED                     [ 66%]
+test_meshadapt.py::test_adapt_parallel_3d_np3 FAILED                     [ 73%]
+test_meshadapt.py::test_enforce_spd_h_min[2] PASSED                      [ 80%]
+test_meshadapt.py::test_enforce_spd_h_min[3] PASSED                      [ 86%]
+test_meshadapt.py::test_enforce_spd_h_max[2] PASSED                      [ 93%]
+test_meshadapt.py::test_enforce_spd_h_max[3] PASSED                      [100%]
+
+=================================== FAILURES ===================================
+____________________________ test_no_adapt_parallel ____________________________
+
+args = (), kwargs = {}
+
+    def parallel_callback(*args, **kwargs):
+>        subprocess.run(cmd, check=True)
+
+../../../pytest-mpi/pytest_mpi.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['mpiexec', '-n', '1', '-genv', '_PYTEST_MPI_CHILD_PROCESS', '1', ...],)
+kwargs = {}
+process = <Popen: returncode: 15 args: ['mpiexec', '-n', '1', '-genv', '_PYTEST_MPI_CH...>
+stdout = None, stderr = None, retcode = 15
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['mpiexec', '-n', '1', '-genv', '_PYTEST_MPI_CHILD_PROCESS', '1', 'python', '-m', 'pytest', '--runxfail', '-s', '-q', '/Users/cw1722/Projects/firedrake/firedrake-adapt/src/firedrake/tests/meshadapt/test_meshadapt.py::test_no_adapt_parallel', ':', '-n', '1', 'python', '-m', 'pytest', '--runxfail', '-s', '-q', '/Users/cw1722/Projects/firedrake/firedrake-adapt/src/firedrake/tests/meshadapt/test_meshadapt.py::test_no_adapt_parallel', '--tb=no', '--no-summary', '--no-header', '--disable-warnings', '--show-capture=no']' returned non-zero exit status 15.
+
+/opt/homebrew/Cellar/python@3.11/3.11.3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py:571: CalledProcessError
+----------------------------- Captured stderr call -----------------------------
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+Fatal error in internal_Init_thread: Other MPI error, error stack:
+internal_Init_thread(60)...........: MPI_Init_thread(argc=0x0, argv=0x0, required=3, provided=0x16fb05430) failed
+MPII_Init_thread(221)..............: 
+MPID_Init(75)......................: 
+init_world(190)....................: channel initialization failed
+MPIDI_CH3_Init(84).................: 
+MPID_nem_init(313).................: 
+MPID_nem_tcp_init(175).............: 
+MPID_nem_tcp_get_business_card(397): 
+GetSockInterfaceAddr(370)..........: gethostbyname failed, IC-FVFJ47SAQ6LR (errno 0)
+Fatal error in internal_Init_thread: Other MPI error, error stack:
+internal_Init_thread(60)...........: MPI_Init_thread(argc=0x0, argv=0x0, required=3, provided=0x16f38d3c0) failed
+MPII_Init_thread(221)..............: 
+MPID_Init(75)......................: 
+init_world(190)....................: channel initialization failed
+MPIDI_CH3_Init(84).................: 
+MPID_nem_init(313).................: 
+MPID_nem_tcp_init(175).............: 
+MPID_nem_tcp_get_business_card(397): 
+GetSockInterfaceAddr(370)..........: gethostbyname failed, IC-FVFJ47SAQ6LR (errno 0)
+__________________________ test_adapt_parallel_3d_np2 __________________________
+
+args = (), kwargs = {}
+
+    def parallel_callback(*args, **kwargs):
+>        subprocess.run(cmd, check=True)
+
+../../../pytest-mpi/pytest_mpi.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['mpiexec', '-n', '1', '-genv', '_PYTEST_MPI_CHILD_PROCESS', '1', ...],)
+kwargs = {}
+process = <Popen: returncode: 15 args: ['mpiexec', '-n', '1', '-genv', '_PYTEST_MPI_CH...>
+stdout = None, stderr = None, retcode = 15
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['mpiexec', '-n', '1', '-genv', '_PYTEST_MPI_CHILD_PROCESS', '1', 'python', '-m', 'pytest', '--runxfail', '-s', '-q', '/Users/cw1722/Projects/firedrake/firedrake-adapt/src/firedrake/tests/meshadapt/test_meshadapt.py::test_adapt_parallel_3d_np2', ':', '-n', '1', 'python', '-m', 'pytest', '--runxfail', '-s', '-q', '/Users/cw1722/Projects/firedrake/firedrake-adapt/src/firedrake/tests/meshadapt/test_meshadapt.py::test_adapt_parallel_3d_np2', '--tb=no', '--no-summary', '--no-header', '--disable-warnings', '--show-capture=no']' returned non-zero exit status 15.
+
+/opt/homebrew/Cellar/python@3.11/3.11.3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py:571: CalledProcessError
+----------------------------- Captured stderr call -----------------------------
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+Fatal error in internal_Init_thread: Other MPI error, error stack:
+internal_Init_thread(60)...........: MPI_Init_thread(argc=0x0, argv=0x0, required=3, provided=0x16f6a9420) failed
+MPII_Init_thread(221)..............: 
+MPID_Init(75)......................: 
+init_world(190)....................: channel initialization failed
+MPIDI_CH3_Init(84).................: 
+MPID_nem_init(313).................: 
+MPID_nem_tcp_init(175).............: 
+MPID_nem_tcp_get_business_card(397): 
+GetSockInterfaceAddr(370)..........: gethostbyname failed, IC-FVFJ47SAQ6LR (errno 0)
+__________________________ test_adapt_parallel_3d_np3 __________________________
+
+args = (), kwargs = {}
+
+    def parallel_callback(*args, **kwargs):
+>        subprocess.run(cmd, check=True)
+
+../../../pytest-mpi/pytest_mpi.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['mpiexec', '-n', '1', '-genv', '_PYTEST_MPI_CHILD_PROCESS', '1', ...],)
+kwargs = {}
+process = <Popen: returncode: 15 args: ['mpiexec', '-n', '1', '-genv', '_PYTEST_MPI_CH...>
+stdout = None, stderr = None, retcode = 15
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout is given, and the process takes too long, a TimeoutExpired
+        exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['mpiexec', '-n', '1', '-genv', '_PYTEST_MPI_CHILD_PROCESS', '1', 'python', '-m', 'pytest', '--runxfail', '-s', '-q', '/Users/cw1722/Projects/firedrake/firedrake-adapt/src/firedrake/tests/meshadapt/test_meshadapt.py::test_adapt_parallel_3d_np3', ':', '-n', '2', 'python', '-m', 'pytest', '--runxfail', '-s', '-q', '/Users/cw1722/Projects/firedrake/firedrake-adapt/src/firedrake/tests/meshadapt/test_meshadapt.py::test_adapt_parallel_3d_np3', '--tb=no', '--no-summary', '--no-header', '--disable-warnings', '--show-capture=no']' returned non-zero exit status 15.
+
+/opt/homebrew/Cellar/python@3.11/3.11.3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/subprocess.py:571: CalledProcessError
+----------------------------- Captured stderr call -----------------------------
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+0.00s - Debugger warning: It seems that frozen modules are being used, which may
+0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off
+0.00s - to python to disable frozen modules.
+0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.
+Fatal error in internal_Init_thread: Other MPI error, error stack:
+internal_Init_thread(60)...........: MPI_Init_thread(argc=0x0, argv=0x0, required=3, provided=0x16b70d3b0) failed
+MPII_Init_thread(221)..............: 
+MPID_Init(75)......................: 
+init_world(190)....................: channel initialization failed
+MPIDI_CH3_Init(84).................: 
+MPID_nem_init(313).................: 
+MPID_nem_tcp_init(175).............: 
+MPID_nem_tcp_get_business_card(397): 
+GetSockInterfaceAddr(370)..........: gethostbyname failed, IC-FVFJ47SAQ6LR (errno 0)
+Fatal error in internal_Init_thread: Other MPI error, error stack:
+internal_Init_thread(60)...........: MPI_Init_thread(argc=0x0, argv=0x0, required=3, provided=0x16ee2d3b0) failed
+MPII_Init_thread(221)..............: 
+MPID_Init(75)......................: 
+init_world(190)....................: channel initialization failed
+MPIDI_CH3_Init(84).................: 
+MPID_nem_init(313).................: 
+MPID_nem_tcp_init(175).............: 
+MPID_nem_tcp_get_business_card(397): 
+GetSockInterfaceAddr(370)..........: gethostbyname failed, IC-FVFJ47SAQ6LR (errno 0)
+Fatal error in internal_Init_thread: Other MPI error, error stack:
+internal_Init_thread(60)...........: MPI_Init_thread(argc=0x0, argv=0x0, required=3, provided=0x16f679420) failed
+MPII_Init_thread(221)..............: 
+MPID_Init(75)......................: 
+init_world(190)....................: channel initialization failed
+MPIDI_CH3_Init(84).................: 
+MPID_nem_init(313).................: 
+MPID_nem_tcp_init(175).............: 
+MPID_nem_tcp_get_business_card(397): 
+GetSockInterfaceAddr(370)..........: gethostbyname failed, IC-FVFJ47SAQ6LR (errno 0)
+=============================== warnings summary ===============================
+tests/meshadapt/test_meshadapt.py: 26 warnings
+  /Users/cw1722/Projects/firedrake/firedrake-adapt/src/ufl/ufl/core/expr.py:276: DeprecationWarning: Expr.ufl_domain() is deprecated, please use extract_unique_domain(expr) instead.
+    warnings.warn("Expr.ufl_domain() is deprecated, please "
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED test_meshadapt.py::test_no_adapt_parallel - subprocess.CalledProcessEr...
+FAILED test_meshadapt.py::test_adapt_parallel_3d_np2 - subprocess.CalledProce...
+FAILED test_meshadapt.py::test_adapt_parallel_3d_np3 - subprocess.CalledProce...
+================== 3 failed, 12 passed, 26 warnings in 15.11s ==================
