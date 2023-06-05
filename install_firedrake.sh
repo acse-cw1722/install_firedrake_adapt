@@ -8,7 +8,7 @@
 # ====================================================================== #
 
 # Unset PYTHONPATH and PETSc env variables
-SOFTWARE=/Users/cw1722/Projects/firedrake
+SOFTWARE=<your/install/path>
 PYTHONPATH_TMP=$PYTHONPATH
 unset PYTHONPATH
 unset PETSC_DIR
