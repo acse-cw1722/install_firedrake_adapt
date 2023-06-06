@@ -13,6 +13,8 @@ Most of the materials comes from [pyroteus](https://github.com/pyroteus/pyroteus
 
 ## For mac users:
 
+### `-w` error in making PETSc
+
 One gotcha users could encounter is listed [here](https://github.com/firedrakeproject/firedrake/issues/2793) so if you are using gmake 4.4.1, you should run
 
 ```{shell}
@@ -26,6 +28,19 @@ brew link make@4.4
 before executing the install script.
 
 Note this is caused by a bug produced by gmake 4.4.1, so in the future, if gmake get around with this bug, you do not necessarily need to do this step.
+
+PS: some users reflected that the `4.4` should be replaced with `4.4.0`. If the above instructions failed, please use `4.4.0` instead of `4.4`
+
+### Parallel error
+
+After installation, if you find parallel tests are failing, then please do some editing as suggested [here](https://firedrakeproject.org/download.html#testing-the-installation)
+
+To be more specific, add below statement in `/etc/hosts` (if not editable, use sudo vim /etc/hosts to force writting)
+
+```
+127.0.0.1       LOCALHOSTNAME.local
+127.0.0.1       LOCALHOSTNAME
+```
 
 # Activate firedrake
 
