@@ -4,6 +4,8 @@ This is a repo containing scripts to install firedrake with adaptive mesh functi
 
 Most of the materials comes from [pyroteus](https://github.com/pyroteus/pyroteus/tree/main/install) and [firedrake](https://github.com/firedrakeproject).
 
+If you are using conda, it is the best to deactivate it before running the installation by using (`conda deactivate`)
+
 ## Install:
 
 1. Replace `SOFTWARE=<your/install/path>` in `install_firedrake.sh` to the project root folder (where you can find `install_firedrake.sh` and `petsc_options.txt`).
@@ -37,6 +39,8 @@ After installation, if you find parallel tests are failing, then please do some 
 
 To be more specific, add below statement in `/etc/hosts` (if not editable, use sudo vim /etc/hosts to force writting)
 
+(use `hostname` command to find LOCALHOSTNAME and the LOCALHOSTNAME below)
+
 ```
 127.0.0.1       LOCALHOSTNAME.local
 127.0.0.1       LOCALHOSTNAME
@@ -57,3 +61,4 @@ if you wish to set a command to activate firedrake instead of typing in a long p
 then execute `fire_drake` in a new shell.
 
 to deactivate, simply use `deactivate`.
+
